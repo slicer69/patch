@@ -566,7 +566,7 @@ create_file (char const *file, int open_flags, mode_t mode,
 	{
 	  char *f;
 	  if (errno != try_makedirs_errno)
-	    pfatal ("Can't create file %s", quotearg (file));
+	    pfatal ("Cannot create file %s", quotearg (file));
 	  f = xstrdup (file);
 	  makedirs (f);
 	  free (f);
