@@ -2021,5 +2021,12 @@ cleanup (void)
   remove_if_needed (TMPEDNAME, &TMPEDNAME_needs_removal);
   remove_if_needed (TMPREJNAME, &TMPREJNAME_needs_removal);
   // output_files (NULL);
+  /* I removed the new output_files() function because it calls
+     output_file_now(), which calls move_file() which called copy_file().
+     The copy_file() function can fail if it cannot write its output file.
+     That causes pfatal() to be called, which calls this function (cleanup).
+     The result is an endless loop which crashes when the stack fills up.
+     -- Jesse
+  */
   forget_output_files();
 }
