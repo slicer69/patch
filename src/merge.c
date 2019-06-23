@@ -499,7 +499,7 @@ merge_hunk (int hunk, struct outstate *outstate, lin where, bool *somefailed)
 	  outstate->after_newline = true;
 	  outstate->zero_output = false;
 	  if (ferror (fp))
-	    write_fatal ();
+	    write_fatal (NULL);
 
 	  /* Output common suffix lines.  */
 	  if (common_suffix)

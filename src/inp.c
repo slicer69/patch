@@ -421,7 +421,7 @@ plan_b (char const *filename)
       char const *p0 = p;
       if (! (line % lines_per_buf))	/* new block */
 	if (write (tifd, tibuf[0], tibufsize) != tibufsize)
-	  write_fatal ();
+	  write_fatal (TMPINNAME);
       if ((c = getc (ifp)) == EOF)
 	break;
 
@@ -448,7 +448,7 @@ plan_b (char const *filename)
 
   if (line % lines_per_buf  !=  0)
     if (write (tifd, tibuf[0], tibufsize) != tibufsize)
-      write_fatal ();
+      write_fatal (TMPINNAME);
   input_lines = line - 1;
 }
 

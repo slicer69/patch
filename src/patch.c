@@ -622,7 +622,7 @@ main (int argc, char **argv)
 
 	if (failed && ! skip_reject_file) {
 	    if (fstat (fileno (rejfp), &rejst) != 0 || fclose (rejfp) != 0)
-	      write_fatal ();
+	      write_fatal (NULL);
 	    rejfp = NULL;
 	    somefailed = true;
 	    say ("%d out of %d hunk%s %s", failed, hunk, "s" + (hunk == 1),
@@ -661,7 +661,7 @@ main (int argc, char **argv)
 
 			olderrno = stat_file (rej, &oldst);
 			if (olderrno && olderrno != ENOENT)
-			  write_fatal ();
+			  write_fatal (TMPREJNAME);
 		        if (! olderrno && lookup_file_id (&oldst) == CREATED)
 			  append_to_file (TMPREJNAME, rej);
 			else
@@ -680,7 +680,7 @@ main (int argc, char **argv)
       set_signals (true);
     }
     if (outstate.ofp && (ferror (outstate.ofp) || fclose (outstate.ofp) != 0))
-      write_fatal ();
+      write_fatal (NULL);
     output_files (NULL);
     cleanup ();
     delete_files ();
@@ -1390,7 +1390,7 @@ abort_hunk_context (bool header, bool reverse)
 	    fatal ("fatal internal error in abort_hunk_context");
 	}
 	if (ferror (rejfp))
-	  write_fatal ();
+	  write_fatal (NULL);
     }
 }
 
@@ -1441,7 +1441,7 @@ apply_hunk (struct outstate *outstate, lin where)
 		    def_state = IN_ELSE;
 		}
 		if (ferror (fp))
-		  write_fatal ();
+		  write_fatal (NULL);
 		outstate->after_newline = pch_write_line (old, fp);
 		outstate->zero_output = false;
 	    }
@@ -1465,7 +1465,7 @@ apply_hunk (struct outstate *outstate, lin where)
 		    def_state = IN_IFDEF;
 		}
 		if (ferror (fp))
-		  write_fatal ();
+		  write_fatal (NULL);
 	    }
 	    outstate->after_newline = pch_write_line (new, fp);
 	    outstate->zero_output = false;
@@ -1481,7 +1481,7 @@ apply_hunk (struct outstate *outstate, lin where)
 	    if (R_do_defines) {
 	       fprintf (fp, 1 + not_defined, R_do_defines);
 	       if (ferror (fp))
-		write_fatal ();
+		write_fatal (NULL);
 	       def_state = IN_IFNDEF;
 	    }
 
@@ -1498,7 +1498,7 @@ apply_hunk (struct outstate *outstate, lin where)
 	    if (R_do_defines) {
 		fputs (outstate->after_newline + else_defined, fp);
 		if (ferror (fp))
-		  write_fatal ();
+		  write_fatal (NULL);
 		def_state = IN_ELSE;
 	    }
 
@@ -1517,7 +1517,7 @@ apply_hunk (struct outstate *outstate, lin where)
 	    if (R_do_defines && def_state != OUTSIDE) {
 		fputs (outstate->after_newline + end_defined, fp);
 		if (ferror (fp))
-		  write_fatal ();
+		  write_fatal (NULL);
 		outstate->after_newline = true;
 		def_state = OUTSIDE;
 	    }
@@ -1537,14 +1537,14 @@ apply_hunk (struct outstate *outstate, lin where)
 		def_state = IN_ELSE;
 	    }
 	    if (ferror (fp))
-	      write_fatal ();
+	      write_fatal (NULL);
 	    outstate->zero_output = false;
 	}
 
 	do
 	  {
 	    if (! outstate->after_newline  &&  putc ('\n', fp) == EOF)
-	      write_fatal ();
+	      write_fatal (NULL);
 	    outstate->after_newline = pch_write_line (new, fp);
 	    outstate->zero_output = false;
 	    new++;
@@ -1554,7 +1554,7 @@ apply_hunk (struct outstate *outstate, lin where)
     if (R_do_defines && def_state != OUTSIDE) {
 	fputs (outstate->after_newline + end_defined, fp);
 	if (ferror (fp))
-	  write_fatal ();
+	  write_fatal (NULL);
 	outstate->after_newline = true;
     }
     out_offset += pch_repl_lines() - pch_ptrn_lines ();
@@ -1643,7 +1643,7 @@ copy_till (struct outstate *outstate, lin lastline)
 	  {
 	    if ((! outstate->after_newline  &&  putc ('\n', fp) == EOF)
 		|| fwrite (s, sizeof *s, size, fp) < size)
-	      write_fatal ();
+	      write_fatal (NULL);
 	    outstate->after_newline = s[size - 1] == '\n';
 	    outstate->zero_output = false;
 	  }
@@ -1675,7 +1675,7 @@ spew_output (struct outstate *outstate, struct stat *st)
 	if (fflush (outstate->ofp) != 0
 	    || fstat (fileno (outstate->ofp), st) != 0
 	    || fclose (outstate->ofp) != 0)
-	  write_fatal ();
+	  write_fatal (NULL);
 	outstate->ofp = 0;
       }
 

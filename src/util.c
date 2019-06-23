@@ -589,7 +589,7 @@ copy_to_fd (const char *from, int tofd)
       if (i == (ssize_t) -1)
 	read_fatal ();
       if (full_write (tofd, buf, i) != i)
-	write_fatal ();
+	write_fatal (NULL);
     }
   if (close (fromfd) != 0)
     read_fatal ();
@@ -631,7 +631,7 @@ copy_file (char const *from, char const *to, struct stat *tost,
       if (tost && fstat (tofd, tost) != 0)
 	pfatal ("Can't get file attributes of %s %s", "file", to);
       if (close (tofd) != 0)
-	write_fatal ();
+	write_fatal (to);
     }
 }
 
@@ -646,7 +646,7 @@ append_to_file (char const *from, char const *to)
     pfatal ("Can't reopen file %s", quotearg (to));
   copy_to_fd (from, tofd);
   if (close (tofd) != 0)
-    write_fatal ();
+    write_fatal (to);
 }
 
 static char const DEV_NULL[] = NULL_DEVICE;
@@ -937,9 +937,12 @@ read_fatal (void)
 }
 
 void
-write_fatal (void)
+write_fatal (const char *current_file)
 {
-  pfatal ("write error");
+  if (current_file)
+    pfatal("write error when operating on %s", current_file);
+  else
+    pfatal ("write error");
 }
 
 /* Say something from patch, something from the system, then silence . . . */

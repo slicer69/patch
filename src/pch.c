@@ -153,12 +153,12 @@ open_patch_file (char const *filename)
 	     (charsread = fread (buf, 1, bufsize, read_pfp)) != 0;
 	     st.st_size += charsread)
 	  if (fwrite (buf, 1, charsread, pfp) != charsread)
-	    write_fatal ();
+	    write_fatal (TMPPATNAME);
 	if (ferror (read_pfp) || fclose (read_pfp) != 0)
 	  read_fatal ();
 	if (fflush (pfp) != 0
 	    || file_seek (pfp, (file_offset) 0, SEEK_SET) != 0)
-	  write_fatal ();
+	  write_fatal (TMPPATNAME);
       }
     p_filesize = st.st_size;
     if (p_filesize != (file_offset) p_filesize)
@@ -2290,7 +2290,7 @@ pch_write_line (lin line, FILE *file)
 
   if (fwrite (p_line[line], sizeof (*p_line[line]), p_len[line], file)
       < p_len[line])
-    write_fatal ();
+    write_fatal (NULL);
   return after_newline;
 }
 
@@ -2437,14 +2437,14 @@ do_ed_script (char const *inname, char const *outname,
 	if (ed_command_letter) {
 	    if (tmpfp)
 		if (fwrite (buf, sizeof *buf, chars_read, tmpfp) < chars_read)
-		    write_fatal ();
+		    write_fatal (outname);
 	    if (ed_command_letter != 'd' && ed_command_letter != 's') {
 	        p_pass_comments_through = true;
 		while ((chars_read = get_line ()) != 0) {
 		    if (tmpfp)
 			if (fwrite (buf, sizeof *buf, chars_read, tmpfp)
 			    < chars_read)
-			    write_fatal ();
+			    write_fatal (TMPEDNAME);
 		    if (chars_read == 2  &&  strEQ (buf, ".\n"))
 			break;
 		}
@@ -2460,7 +2460,7 @@ do_ed_script (char const *inname, char const *outname,
       return;
     if (fwrite ("w\nq\n", sizeof (char), (size_t) 4, tmpfp) < (size_t) 4
 	|| fflush (tmpfp) != 0)
-      write_fatal ();
+      write_fatal (TMPEDNAME);
 
     if (lseek (tmpfd, 0, SEEK_SET) == -1)
       pfatal ("Can't rewind to the beginning of file %s", quotearg (TMPEDNAME));
@@ -2499,7 +2499,7 @@ do_ed_script (char const *inname, char const *outname,
 	  pfatal ("can't open '%s'", outname);
 	while ((c = getc (ifp)) != EOF)
 	  if (putc (c, ofp) == EOF)
-	    write_fatal ();
+	    write_fatal (outname);
 	if (ferror (ifp) || fclose (ifp) != 0)
 	  read_fatal ();
       }
