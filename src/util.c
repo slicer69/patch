@@ -955,7 +955,8 @@ pfatal (char const *format, ...)
   va_end (args);
   fflush (stderr); /* perror bypasses stdio on some hosts.  */
   errno = errnum;
-  perror (" ");
+  if (errno)
+     perror (" ");
   fflush (stderr);
   fatal_exit (0);
 }

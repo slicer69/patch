@@ -1427,7 +1427,13 @@ apply_hunk (struct outstate *outstate, lin where)
 
     while (old <= lastline) {
 	if (pch_char(old) == '-') {
-	    assert (outstate->after_newline);
+	    // assert (outstate->after_newline);
+            if (! outstate->after_newline)
+            {
+               errno = 0;  // clear before printing output
+               pfatal("Unable to apply hunk. Possibly due to missing filename in patch or malformed patch.");
+            }
+            
 	    if (! copy_till (outstate, where + old - 1))
 		return false;
 	    if (R_do_defines) {
