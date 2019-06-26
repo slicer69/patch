@@ -100,8 +100,12 @@ static void init_dirfd_cache (void)
 
   max_cached_fds = 8;
   if (getrlimit (RLIMIT_NOFILE, &nofile) == 0)
-    max_cached_fds = MAX (nofile.rlim_cur / 4, max_cached_fds);
-
+  {
+    // Only accept ranges within sane limits (1-1024) to prevent
+    // overtaxing the CPU. Otherwise use default value set above.
+    if ( (nofile.rlim_cur >= 1) && (nofile.rlim_cur <= 1024) )
+       max_cached_fds = MAX (nofile.rlim_cur / 4, max_cached_fds);
+  }
   cached_dirfds = hash_initialize (max_cached_fds,
 				   NULL,
 				   hash_cached_dirfd,
