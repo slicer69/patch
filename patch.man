@@ -224,6 +224,11 @@ of those, it then takes all the names with the shortest basename;
 of those, it then takes all the shortest names;
 finally, it takes the first remaining name.
 .PP
+Please note that patches that specify dangerous filenames, such as
+absolute pathnames (i.e. /tmp/dir/filename), will be skipped over.
+This prevents the program from damaging files outside of the
+current directory tree.
+.PP
 Additionally, if the leading garbage contains a
 .B Prereq:\&
 line,
