@@ -343,8 +343,14 @@ fetchmode (char const *str)
      }
    if (*s == '\r')
      s++;
+   /*
+   This check causes old mode to be reset every time.
    if (*s != '\n')
+   {
+     printf("DEBUG resetting mode due to newline\n");
      mode = 0;
+   }
+   */
 
     /* NOTE: The "diff --git" format always sets the file mode permission
        bits of symlinks to 0.  (On Linux, symlinks actually always have

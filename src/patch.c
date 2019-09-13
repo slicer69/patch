@@ -580,7 +580,23 @@ main (int argc, char **argv)
 		      struct timespec new_time = pch_timestamp (! reverse);
 		      mode_t mode = file_type |
 			  ((set_mode ? new_mode : instat.st_mode) & S_IRWXUGO);
-
+                      /* If mode is changing and old mode is not
+                         the same as expected in the patch, warn. */
+                      if ( (old_mode) && (old_mode != instat.st_mode) )
+                      {
+                          if (! force)
+                          { 
+                              say("Warning: original file's permission mode does not "
+                                  "match expected mode in patch file. Leaving "
+                                  "original mode in place. Use --force to overrule.\n");
+                              mode = instat.st_mode;
+                          }
+                          else
+                          {
+                              say("Warning: original file's permission mode does not "
+                                  "match expected mode in patch file.\n"); 
+                          }
+                      }
 		      if ((set_time | set_utc) && new_time.tv_sec != -1)
 			{
 			  struct timespec old_time = pch_timestamp (reverse);
